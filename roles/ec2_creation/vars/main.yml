@@ -5,20 +5,14 @@ default_values:
   zone: "us-east-1a"
   key_pair: "DevOps-Test"
   image_id: "ami-08111162" #Amazon Linux 64 bits blank slate
-  security_groups: ["DevOps-Test-SG"]
-
-instances:
-  development:
-    example.com:
-      elastic_ip: "52.200.15.159"
-      name: "example.com"
+  security_groups: ["DevOps-Test"]
+  name: "ruby_ec2_test_onstack"
 
 instance_values:
-  name: "{{ instances[rails_env][site]['name'] | default(default_values['name']) }}"
-  instance_type: "{{ instances[rails_env][site]['instance_type'] | default(default_values['instance_type']) }}"
-  region: "{{ instances[rails_env][site]['region'] | default(default_values['region']) }}"
-  zone: "{{ instances[rails_env][site]['zone'] | default(default_values['zone']) }}"
-  key_pair: "{{ instances[rails_env][site]['key_pair'] | default(default_values['key_pair']) }}"
-  image_id: "{{ instances[rails_env][site]['image_id'] | default(default_values['image_id']) }}"
-  elastic_ip: "{{ instances[rails_env][site]['elastic_ip'] | default(default_values['elastic_ip']) }}"
-  security_groups: "{{ instances[rails_env][site]['security_groups'] | default(default_values['security_groups']) }}"
+  name: "{{ default_values['name'] }}"
+  instance_type: "{{ default_values['instance_type'] }}"
+  region: "{{ default_values['region'] }}"
+  zone: "{{ default_values['zone'] }}"
+  key_pair: "{{ default_values['key_pair'] }}"
+  image_id: "{{ default_values['image_id'] }}"
+  security_groups: "{{ default_values['security_groups'] }}"

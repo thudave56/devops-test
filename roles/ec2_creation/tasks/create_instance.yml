@@ -23,6 +23,8 @@
     state: started
     host: "{{ ec2_info.instances[0].public_dns_name }}"
     port: 22
+    delay: 60
+    timeout: 500
   when: ec2_info|changed
 
 - name: Add new instance to ec2hosts group
@@ -35,4 +37,3 @@
 - name: Get ec2_info information
   debug:
     msg: "{{ ec2_info }}"
-

@@ -11,3 +11,4 @@
    - "gcc"
    - "ruby-devel"
    - "rubygems"
+   - "httpd"

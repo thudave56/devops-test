@@ -2,7 +2,7 @@
 default_values:
   instance_type: "t2.micro"
   region: "us-east-1"
-  zone: "us-east-1a, us-east-1b"
+  zone: "us-east-1a"
   key_pair: "DevOps-Test"
   image_id: "ami-08111162" #Amazon Linux 64 bits blank slate
   security_groups: ["DevOps-Test"]

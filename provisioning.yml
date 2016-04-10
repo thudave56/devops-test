@@ -40,18 +40,28 @@
       shell: source /etc/profile.d/rvm.sh
       sudo: true
 
+    - name: install gem rails
+      command: bash -lc "gem install rails"
+      sudo: true
+
     - name: install gem io-console
       command: bash -lc "gem install io-console"
       sudo: true
 
-#    - name: RVM reload
-#      shell: rvm reload
-#      sudo: true
+    - name: RVM reload
+      command: bash -lc "rvm reload"
+      sudo: true
+
+    - name: Fix permissions for rvm
+      command: bash -lc "rvm group add rvm '$USER'"
+      sudo: true
 
 
-#    - name: RVM install Ruby version 2.1.0
-#      shell: rvm install 2.1.0
-#      sudo: true
+    - name: RVM install Ruby version 2.1.0
+      command: bash -lc "rvm install 2.1.0"
+      sudo: true
+
+# -- Note ran manually and
 
     - name: Install bundler
       command: bash -lc "gem install bundler"
@@ -59,6 +69,14 @@
 
     - name: Install sinatra
       command: bash -lc "gem install sinatra"
+      sudo: true
+
+    - name: Install passenger
+      command: bash -lc "gem install passenger"
+      sudo: true
+
+    - name: update gem
+      command: bash -lc "gem update"
       sudo: true
 
 # Usage: sudo addgroup [group name]
@@ -110,6 +128,9 @@
       file: path=/var/www/app/logs state=directory mode=0755
       sudo: true
 
+    - name: change owner of application folder
+      command: bash -lc "sudo chown -R $(whoami):$(whoami) /var/www/app/"
+
     - name: touch file for restart.txt
       file: path=/var/www/app/tmp/restart.txt state=touch mode=0644
       sudo: true
@@ -148,3 +169,8 @@
       command: mv /srv/checkout/Gemfile /var/www/app/Gemfile
       when: gemfile_stat.stat.exists
       sudo: true
+#----------------------------------------
+#----------------------------------------
+#    - name: Run Bundler
+#      bundler: state=present chdir=/var/www/app
+#      sudo: true

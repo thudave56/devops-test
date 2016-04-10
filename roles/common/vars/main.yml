@@ -12,3 +12,5 @@
    - "ruby-devel"
    - "rubygems"
    - "httpd"
+   - "httpd-devel"
+   - "sqlite-devel"

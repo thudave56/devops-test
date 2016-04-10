@@ -41,7 +41,7 @@
       sudo: true
 
     - name: install gem io-console
-      gem: name=io-console state=latest
+      command: bash -lc "gem install io-console"
       sudo: true
 
 #    - name: RVM reload
@@ -58,7 +58,7 @@
       sudo: true
 
     - name: Install sinatra
-      gem: name=sinatra state=latest
+      command: bash -lc "gem install sinatra"
       sudo: true
 
 # Usage: sudo addgroup [group name]

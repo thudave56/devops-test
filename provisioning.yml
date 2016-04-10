@@ -13,5 +13,61 @@
   gather_facts: false
   roles:
     - ec2_creation
-    - common
+
+#Configure and install all we need
+- hosts: ec2hosts
+  gather_facts: false
+  remote_user: ec2-user
+  tasks:
+    - name: upgrade all packages
+      yum: name=* state=latest
+      sudo: true
+
+    - name: Install cvs
+      yum: name=cvs state=present
+      sudo: true
+
+    - name: Install subversion
+      yum: name=subversion state=present
+      sudo: true
+
+    - name: Install git-core
+      yum: name=git-core state=present
+      sudo: true
+
+    - name: Install mercurial
+      yum: name=mercurial state=present
+      sudo: true
+#
+    - name: Download the GP key for rvm download
+      shell: curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
+      sudo: true
+
+    - name: Download and install the rvm package
+      shell: curl -L get.rvm.io | bash -s stable
+      sudo: true
+
+    - name: Create System Environment
+      shell: source /etc/profile.d/rvm.sh
+      sudo: true
+
+    - name: RVM reload
+      shell: rvm reload
+      sudo: true
+
+    - name: RVM install Ruby version 2.1.0
+      command: rvm install 2.1.0
+      sudo: true
+
+
+    - name: Install sinatra
+      gem: name=sinatra state=present
+      sudo: true
+
+# Usage: sudo addgroup [group name]
+    - name: create local group www
+      shell: addgroup www
+      sudo: true
+
+
 #    - devops-testapp

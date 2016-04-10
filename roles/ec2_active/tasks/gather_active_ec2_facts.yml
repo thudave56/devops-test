@@ -1,0 +1,9 @@
+---
+- name: Check if instance exists
+  ec2_instances:
+    region: "us-east-1"
+    tag: "ruby_ec2_test_onstack"
+  register: ec2_instances
+
+- name: Debug EC2 facts
+  debug: msg="{{ ec2_instances.instances }}"

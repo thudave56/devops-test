@@ -1,0 +1,2 @@
+---
+- include: ec2_query.yml #Get ec2 information

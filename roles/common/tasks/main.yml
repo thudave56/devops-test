@@ -1,31 +1,31 @@
 ---
-# Update all packages to the latest version
-- name: upgrade all packages
-  yum: name=* state=latest
+  tasks:
+  - name: upgrade all packages
+    yum: name=* state=latest
 
-- name: Install cvs
-  yum: name=cvs state=present
+  - name: Install cvs
+    yum: name=cvs state=present
 
-- name: Install subversion
-  yum: name=subversion state=present
+  - name: Install subversion
+    yum: name=subversion state=present
 
-- name: Install git-core
-  yum: name=git-core state=present
+  - name: Install git-core
+    yum: name=git-core state=present
 
-- name: Install mercurial
-  yum: name=mercurial state=present
+  - name: Install mercurial
+    yum: name=mercurial state=present
 
-- name: Download the GP key for rvm download
-  command: gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+  - name: Download the GP key for rvm download
+    command: gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 
-- name: Download the rvm package
-  command: -- curl -L get.rvm.io | bash -s stable
+  - name: Download the rvm package
+    command: -- curl -L get.rvm.io | bash -s stable
 
-- name: Create System Environment
-  command: source /home/ec2-user/.rvm/scripts/rvm
+  - name: Create System Environment
+    command: source /home/ec2-user/.rvm/scripts/rvm
 
-- name: RVM reload
-  command: rvm reload
+  - name: RVM reload
+    command: rvm reload
 
-- name: Install sinatra
-  gem: name=sinatra state=present
+  - name: Install sinatra
+    gem: name=sinatra state=present

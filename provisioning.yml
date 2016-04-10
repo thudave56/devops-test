@@ -18,27 +18,9 @@
 - hosts: ec2hosts
   gather_facts: false
   remote_user: ec2-user
+  roles:
+      - common # install listing of yum repos needed on the server
   tasks:
-    - name: upgrade all packages
-      yum: name=* state=latest
-      sudo: true
-
-    - name: Install cvs
-      yum: name=cvs state=present
-      sudo: true
-
-    - name: Install subversion
-      yum: name=subversion state=present
-      sudo: true
-
-    - name: Install git-core
-      yum: name=git-core state=present
-      sudo: true
-
-    - name: Install mercurial
-      yum: name=mercurial state=present
-      sudo: true
-#
     - name: Download the GP key for rvm download
       shell: curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
       sudo: true
@@ -47,27 +29,122 @@
       shell: curl -L get.rvm.io | bash -s stable
       sudo: true
 
+# pull down latest head for rvm
+#    - name: Update rvm
+#      command: bash -lc "{{ rvm1_rvm }} get {{ rvm1_rvm_version }} && {{ rvm1_rvm }} reload"
+#      changed_when: False
+#      when: rvm_binary.stat.exists and rvm1_rvm_check_for_updates
+#      sudo: yes
+
     - name: Create System Environment
       shell: source /etc/profile.d/rvm.sh
       sudo: true
 
-    - name: RVM reload
-      shell: rvm reload
+    - name: install gem io-console
+      gem: name=io-console state=latest
       sudo: true
 
-    - name: RVM install Ruby version 2.1.0
-      command: rvm install 2.1.0
-      sudo: true
+#    - name: RVM reload
+#      shell: rvm reload
+#      sudo: true
 
+
+#    - name: RVM install Ruby version 2.1.0
+#      shell: rvm install 2.1.0
+#      sudo: true
+
+    - name: Install bundler
+      command: bash -lc "gem install bundler"
+      sudo: true
 
     - name: Install sinatra
-      gem: name=sinatra state=present
+      gem: name=sinatra state=latest
       sudo: true
 
 # Usage: sudo addgroup [group name]
     - name: create local group www
-      shell: addgroup www
+      group: name=www state=present
       sudo: true
 
+    - name: create user
+      user: name=deployer shell=/bin/bash groups=www append=yes
+      sudo: true
 
-#    - devops-testapp
+    - name: make new directory /var/www
+      file: path=/var/www state=directory owner=deployer group=www mode=0775
+      sudo: true
+
+    - name: Copy sudoers file for safety prior to adding the deployer user
+      command: cp -f /etc/sudoers /etc/sudoers.tmp
+      sudo: true
+
+    - name: Create sudoers file backup
+      command: cp -f /etc/sudoers /etc/sudoers.bak
+      sudo: true
+
+    - name: make sure we can sudo as deployer group
+      lineinfile: dest=/etc/sudoers.tmp state=present regexp='^%deployer' line='%deployer ALL=(ALL) ALL'
+      sudo: true
+
+    - name: also make sure ssh-agent works via sudo
+      lineinfile: dest=/etc/sudoers.tmp state=present regexp='^Defaults env_keep\+\=SSH_AUTH_SOCK' line='Defaults env_keep+=SSH_AUTH_SOCK'
+      sudo: true
+
+    - name: Final sudoers file check
+      shell: visudo -q -c -f /etc/sudoers.tmp && cp -f /etc/sudoers.tmp /etc/sudoers
+      sudo: true
+
+    - name: make new directory /var/www/app
+      file: path=/var/www/app state=directory mode=0755
+      sudo: true
+
+    - name: make new directory /var/www/app/tmp
+      file: path=/var/www/app/tmp state=directory mode=0755
+      sudo: true
+
+    - name: make new directory /var/www/app/pids
+      file: path=/var/www/app/pids state=directory mode=0755
+      sudo: true
+
+    - name: make new directory /var/www/app/logs
+      file: path=/var/www/app/logs state=directory mode=0755
+      sudo: true
+
+    - name: touch file for restart.txt
+      file: path=/var/www/app/tmp/restart.txt state=touch mode=0644
+      sudo: true
+
+    - name: clone github repo
+      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes
+      sudo: true
+# Check on the file config from the checkout and then copy it
+    - name: stat config.ru
+      stat: path=/srv/checkout/config.ru
+      register: config_stat
+      sudo: true
+
+    - name: Move config to app directory
+      command: mv /srv/checkout/config.ru /var/www/app/config.ru
+      when: config_stat.stat.exists
+      sudo: true
+# Check on the file app.rb from the checkout and then copy it
+    - name: stat app.rb
+      stat: path=/srv/checkout/app.rb
+      register: app_stat
+      sudo: true
+
+    - name: Move app.rb to app directory
+      command: mv /srv/checkout/app.rb /var/www/app/app.rb
+      when: app_stat.stat.exists
+      sudo: true
+
+# Check on the file Gemfile from the checkout and then copy it
+    - name: stat Gemfile
+      stat: path=/srv/checkout/Gemfile
+      register: gemfile_stat
+      sudo: true
+
+    - name: Move Gemfile to app directory
+      command: mv /srv/checkout/Gemfile /var/www/app/Gemfile
+      when: gemfile_stat.stat.exists
+      sudo: true

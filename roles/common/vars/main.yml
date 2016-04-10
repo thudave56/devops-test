@@ -1,0 +1,13 @@
+---
+ packages:
+   - "git"
+   - "curl-devel"
+   - "openssl"
+   - "openssl-devel"
+   - "cvs"
+   - "subversion"
+   - "git-core"
+   - "mercurial"
+   - "gcc"
+   - "ruby-devel"
+   - "rubygems"

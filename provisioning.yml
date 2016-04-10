@@ -16,6 +16,10 @@
 
 #Configure and install all we need
 - hosts: ec2hosts
+  vars:
+    apache_vhosts_enabled:
+      servername: ec2hosts
+
   gather_facts: false
   remote_user: ec2-user
   roles:
@@ -24,8 +28,6 @@
     #----------------------------------------
     #----------------------------------------
     #    - name: Download and install the RVM package
-    - replace: dest=httpd.conf regexp='**ADD_IP_HERE**' replace='"{{ ec2_info.instances[0].public_ip }}"' backup=yes
-
 
 
     - name: Download the GP key for rvm download
@@ -129,6 +131,10 @@
       file: path=/var/www/devops_test/app state=directory mode=0755
       sudo: true
 
+    - name: make new directory /var/www/devops_test/code
+      file: path=/var/www/devops_test/code state=directory mode=0755
+      sudo: true
+
     - name: make new directory /var/www/devops_test/tmp
       file: path=/var/www/devops_test/tmp state=directory mode=0755
       sudo: true
@@ -147,6 +153,13 @@
     - name: touch file for restart.txt
       file: path=/var/www/devops_test/tmp/restart.txt state=touch mode=0644
       sudo: true
+
+    - name: configure passenger with apache
+      command: bash -lc "rvmsudo passenger-install-apache2-module --auto"
+
+#    - replace: dest=httpd.conf regexp='**ADD_IP_HERE**' replace='"{{ ec2_info.instances[0].public_ip }}"' backup=yes
+#    - template: src=/templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
+
     #----------------------------------------
     #----------------------------------------
     #    - name:Pull down the application data
@@ -163,6 +176,7 @@
       command: mv /srv/checkout/config.ru /var/www/devops_test/code/config.ru
       when: config_stat.stat.exists
       sudo: true
+
 # Check on the file app.rb from the checkout and then copy it
     - name: stat app.rb
       stat: path=/srv/checkout/app.rb
@@ -187,32 +201,33 @@
       when: gemfile_stat.stat.exists
 
     - name: Run the Bundle command
-      command: bash -lc "cd /var/www/devops_test/code | bundle install"
+      command: bash -lc "cd /var/www/devops_test/code && bundle install"
       become: yes
       become_user: deployer
+
 
 
     #----------------------------------------
     #----------------------------------------
     #    - name: Set http service options
 
-    - name: configure passenger with apache
-      command: bash -lc "rvsudo passenger-install-apache2-module"
-      sudo: true
 
     - name: Set httpd service as started
       service: name=httpd state=started
       sudo: true
 
-##Replace text in httpd.conf
-    - name: update template with IP address from dynamic query
-      replace: dest=/templates/httpd.conf
-
-
-    - replace: dest=httpd.conf regexp='**ADD_IP_HERE**' replace='"{{ ec2_info.instances[0].public_ip }}"' backup=yes
-    - template: src=/templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
-
-
     - name: Set httpd servcice to start at boot
       service: name=httpd enabled=yes
       sudo: true
+
+    # This will call the "Restart Apache" handler whenever 'copy' alters
+    # the remote httpd.conf.
+    - name: Update the Apache config
+      action: copy src=./templates/httpd.conf dest=/etc/httpd/httpd.conf
+      notify: restart httpd
+
+  handlers:
+    - name: restart httpd
+      service:
+      name: httpd
+      state: restarted

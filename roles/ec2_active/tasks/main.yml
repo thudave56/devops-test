@@ -1,2 +1,0 @@
----
-- include: gather_active_ec2_facts.yml #Get ec2 information

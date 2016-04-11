@@ -1,0 +1,11 @@
+---
+- name: Search ec2
+  ec2_remote_facts:
+    region: "us-east-1"
+    filters:
+      #"tag:Name": "Dev_Test_Update"
+      "tag:Name": "ruby_ec2_test_onstack"
+  register: ec2_info
+
+#- name: Debug EC2 facts
+#  debug: msg="{{ ec2_info }}"  Dev_Test_Update

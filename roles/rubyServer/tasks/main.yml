@@ -1,0 +1,3 @@
+---
+- include: ruby_install.yml
+- include: folders.yml #Get ec2 information

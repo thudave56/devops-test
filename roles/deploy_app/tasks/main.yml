@@ -1,0 +1,17 @@
+---
+- include: gather_ec2_facts.yml
+
+- name: Add new instance to ec2hosts group
+  add_host:
+    hostname: "{{ ec2_info.instances[0].public_ip }}"
+    groupname: ec2hosts
+    instance_id: "{{ ec2_info.instances[0].id }}"
+
+- hosts: ec2hosts
+  vars:
+    apache_vhosts_enabled:
+      servername: ec2hosts
+  gather_facts: true
+  remote_user: ec2-user
+
+- include: deploy_app.yml

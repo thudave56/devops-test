@@ -1,0 +1,74 @@
+#----------------------------------------
+#----------------------------------------
+#    - name: Setup the application folders  and permissions
+- name: create local group www
+  group: name=www state=present
+  sudo: true
+
+- name: create user
+  user: name=deployer shell=/bin/bash groups=www append=yes
+  sudo: true
+
+- name: make new directory /var/www
+  file: path=/var/www state=directory owner=deployer group=www mode=0775
+  sudo: true
+##------------------------
+##------------------------
+##  -  Add and verify the sudoers files
+- name: Copy sudoers file for safety prior to adding the deployer user
+  command: cp -f /etc/sudoers /etc/sudoers.tmp
+  sudo: true
+
+- name: Create sudoers file backup
+  command: cp -f /etc/sudoers /etc/sudoers.bak
+  sudo: true
+
+- name: make sure we can sudo as deployer group
+  lineinfile: dest=/etc/sudoers.tmp state=present regexp='^%deployer' line='%deployer ALL=(ALL) ALL'
+  sudo: true
+
+- name: also make sure ssh-agent works via sudo
+  lineinfile: dest=/etc/sudoers.tmp state=present regexp='^Defaults env_keep\+\=SSH_AUTH_SOCK' line='Defaults env_keep+=SSH_AUTH_SOCK'
+  sudo: true
+
+- name: Final sudoers file check
+  shell: visudo -q -c -f /etc/sudoers.tmp && cp -f /etc/sudoers.tmp /etc/sudoers
+  sudo: true
+
+- name: make new directory /var/www/devops_test
+  file: path=/var/www/devops_test state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/app
+  file: path=/var/www/devops_test/app state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/code
+  file: path=/var/www/devops_test/code state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/tmp
+  file: path=/var/www/devops_test/tmp state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/pids
+  file: path=/var/www/devops_test/pids state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/logs
+  file: path=/var/www/devops_test/logs state=directory mode=0755
+  sudo: true
+
+- name: make new directory /var/www/devops_test/code/public
+  file: path=/var/www/devops_test/code/public state=directory mode=0755
+  sudo: true
+
+- name: change owner of application folder
+  command: bash -lc "sudo chown -R $(whoami):$(whoami) /var/www/devops_test/"
+
+- name: touch file for restart.txt
+  file: path=/var/www/devops_test/tmp/restart.txt state=touch mode=0644
+  sudo: true
+
+- name: configure passenger with apache
+  command: bash -lc "rvmsudo passenger-install-apache2-module --auto"

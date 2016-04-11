@@ -1,0 +1,52 @@
+    #----------------------------------------
+    #----------------------------------------
+    #    - name: Download and install the RVM package
+
+
+    - name: Download the GP key for rvm download
+      shell: curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
+      sudo: true
+
+    - name: Download and install the rvm package
+      shell: curl -L get.rvm.io | bash -s stable
+      sudo: true
+
+    - name: Create System Environment
+      shell: source /etc/profile.d/rvm.sh
+      sudo: true
+
+    - name: RVM reload
+      command: bash -lc "rvm reload"
+      sudo: true
+
+    - name: Fix permissions for rvm
+      command: bash -lc "rvm group add rvm '$USER'"
+      sudo: true
+    #----------------------------------------
+    #----------------------------------------
+    #    - name: Download and install the Ruby package
+    - name: RVM install Ruby version 2.1.0
+      command: bash -lc "rvm install 2.1.0"
+      sudo: true
+    #----------------------------------------
+    #----------------------------------------
+
+    - name: Install bundler
+      command: bash -lc "gem install bundler --no-ri --no-rdoc"
+      sudo: true
+
+    - name: Install sinatra
+      command: bash -lc "gem install sinatra --no-ri --no-rdoc"
+      sudo: true
+
+    - name: Install passenger
+      command: bash -lc "gem install passenger --no-ri --no-rdoc"
+      sudo: true
+
+    - name: Install puma
+      command: bash -lc "gem install puma --no-ri --no-rdoc"
+      sudo: true
+
+    - name: update gem
+      command: bash -lc "gem update --no-ri --no-rdoc"
+      sudo: true

@@ -1,7 +1,7 @@
 ---
-- name: Get instance information
-  debug:
-    msg: "{{ instance_values }}"
+#- name: Get instance information
+#  debug:
+#    msg: "{{ instance_values }}"
 
 
 - name: Create instances
@@ -16,6 +16,7 @@
     wait: yes
     instance_tags:
       Name: "{{ instance_values['name'] }}"
+      Group: "Dev_Ruby_Test"
 #when: ec2_instances.instances[instance_values['name']]|default("") == ""
   when: ec2_instances.instances[instance_values['count']]|default("") < "{{ instance_values['count'] }}"
   register: ec2_info
@@ -42,6 +43,6 @@
     instance_id: "{{ ec2_info.instances[0].id }}"
   when: ec2_info|changed
 
-- name: Get ec2_info information
-  debug:
-    msg: "{{ ec2_info }}"
+#- name: Get ec2_info information
+#  debug:
+#    msg: "{{ ec2_info }}"

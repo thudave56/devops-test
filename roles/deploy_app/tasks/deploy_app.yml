@@ -1,0 +1,63 @@
+    #----------------------------------------
+    #----------------------------------------
+    #    - name:Pull down the application data
+    - name: clone github repo
+      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes
+      sudo: true
+# Check on the file config from the checkout and then copy it
+    - name: stat config.ru
+      stat: path=/srv/checkout/config.ru
+      register: config_stat
+      sudo: true
+
+    - name: Move config to app directory
+      command: mv /srv/checkout/config.ru /var/www/devops_test/code/config.ru
+      when: config_stat.stat.exists
+      sudo: true
+
+# Check on the file app.rb from the checkout and then copy it
+    - name: stat app.rb
+      stat: path=/srv/checkout/app.rb
+      register: app_stat
+      sudo: true
+
+    - name: Move app.rb to app directory
+      command: mv /srv/checkout/app.rb /var/www/devops_test/code/app.rb
+      sudo: true
+      when: app_stat.stat.exists
+
+
+# Check on the file Gemfile from the checkout and then copy it
+    - name: stat Gemfile
+      stat: path=/srv/checkout/Gemfile
+      register: gemfile_stat
+      sudo: true
+
+    - name: Move Gemfile to app directory
+      command: mv /srv/checkout/Gemfile /var/www/devops_test/code/Gemfile
+      sudo: true
+      when: gemfile_stat.stat.exists
+
+    - name: Run the Bundle command
+      command: bash -lc "cd /var/www/devops_test/code && bundle install"
+      sudo: true
+#      become: yes
+#      become_user: deployer
+
+    - name: Set httpd service as started
+      service: name=httpd state=started
+      sudo: true
+
+    - name: Set httpd servcice to start at boot
+      service: name=httpd enabled=yes
+      sudo: true
+
+    # This will call the "Restart Apache" handler whenever 'copy' alters
+    # the remote httpd.conf.
+    - name: Update the Apache config
+      action: copy src=./templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
+      sudo: true
+
+    - name: Restart Apache service after updates
+      service: name=httpd state=restarted
+      sudo: true

@@ -4,7 +4,9 @@
     region: "us-east-1"
     filters:
       "tag:Group": "Dev_Ruby_Test"
+      "tag:Update": "True"
   register: ec2_info
 
-#- name: Debug EC2 facts
-#  debug: msg="{{ ec2_info }}"  Dev_Test_Update
+- name: Show instance info
+  debug:
+    msg: "{{ ec2_info }}"

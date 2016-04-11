@@ -1,6 +1,25 @@
 ---
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  roles:
-     - deploy_app
+- hosts: all
+  serial: 1
+
+# Pre tasks should disable monitoring
+
+  tasks:
+    - name: Gather EC2 facts
+      ec2_facts:
+
+    - name: Remove node from ELB
+      local_action: ec2_elb
+      args:
+        instance_id: "{{ ansible_ec2_instance_id }}"
+        region:      "{{ aws.region }}"
+        ec2_elbs:    "{{ aws.ec2_elb }}"
+        state:       'absent'
+
+    - name: terminating ec2 instance
+      local_action: ec2
+        state: 'absent'
+        region: us-east-1
+        instance_ids: "{{ ansible_ec2_instance_id }}"
+
+#- include: provisioning.yml

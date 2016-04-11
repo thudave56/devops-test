@@ -1,0 +1,15 @@
+---
+default_values:
+  # Should per default register an instance to an ELB
+  aws_elb_state               : "absent"
+  aws_elb_region              : "us-east-1"
+  aws_elb_ec2_elbs            : "ELB-DevOpsTest"
+  # The EC2 id which should associated with the ELB
+  aws_elb_instance_id         : "empty"
+
+instance_values:
+  aws_elb_state               : "{{ default_values['aws_elb_state'] }}"
+  aws_elb_region              : "{{ default_values['aws_elb_region'] }}"
+  aws_elb_ec2_elbs            : "{{ default_values['aws_elb_ec2_elbs'] }}"
+  # The EC2 id which should associated with the ELB
+  aws_elb_instance_id         : "i-XXXXX"

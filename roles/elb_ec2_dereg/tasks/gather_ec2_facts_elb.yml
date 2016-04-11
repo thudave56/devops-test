@@ -6,5 +6,6 @@
       "tag:Group": "Dev_Ruby_Test"
   register: ec2_info
 
-#- name: Debug EC2 facts
-#  debug: msg="{{ ec2_info }}"  Dev_Test_Update
+- name: Show instance info
+  debug:
+    msg: "{{ ec2_info }}"

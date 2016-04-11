@@ -23,6 +23,6 @@
     - app_install
 
   tasks:
-    - pause: minutes=1 # allow install/httpd to come back online
+    - pause: seconds=15 # allow install/httpd to come back online
 
 - include: elb.yml

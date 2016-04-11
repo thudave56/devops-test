@@ -1,20 +1,18 @@
 ---
-- include: gather_ec2_facts.yml #Get ec2 information
+- include: gather_ec2_facts_elb.yml #Get ec2 information
 
-- name: register/de-register EC2 instances in ELB
+- name: de-register EC2 instances in ELB
   ec2_elb:
     region="{{ instance_values['aws_elb_region'] }}"
     ec2_elbs="{{ instance_values['aws_elb_ec2_elbs']}}"
     instance_id="{{ ec2_info.instances[0].id }}"
     state="{{ instance_values['aws_elb_state'] }}"
 
-- name: rename the ec2 instance
+- name: Set Update tag to True
   ec2_tag:
     region: us-east-1
     resource: "{{ ec2_info.instances[0].id }}"
     state: present
     tags:
       Name: Dev_Test_Update-"{{ec2_info.instances[0].id}}"
-      Update: No
-
-#- include: gather_ec2_facts
+      Update: True

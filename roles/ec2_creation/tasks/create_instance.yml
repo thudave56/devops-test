@@ -33,7 +33,7 @@
 
 - name: Add new instance to ec2hosts group
   add_host:
-    hostname: "{{ ec2_info.instances[0].public_ip }}"
+    hostname: 52.200.15.159
     groupname: ec2hosts
     instance_id: "{{ ec2_info.instances[0].id }}"
   when: ec2_info|changed

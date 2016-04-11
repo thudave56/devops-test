@@ -13,6 +13,8 @@
   gather_facts: false
   roles:
     - ec2_creation
+  tasks:
+  - pause: minutes=1 # Pausing to let the ElasticIP to catch up with processing
 
 #Configure and install all we need
 - hosts: ec2hosts
@@ -226,4 +228,8 @@
     # the remote httpd.conf.
     - name: Update the Apache config
       action: copy src=./templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
+      sudo: true
+
+    - name: Restart Apache service after updates
+      service: name=httpd state=restarted
       sudo: true

@@ -1,8 +1,10 @@
 ---
-
+- name: Get ec2_info information
+  debug:
+    msg: "{{ ec2_info.instances[0].id }}"
 - name: register/de-register EC2 instances in ELB
   ec2_elb:
     region="{{ instance_values['aws_elb_region'] }}"
     ec2_elbs="{{ instance_values['aws_elb_ec2_elbs']}}"
-    instance_id="{{instance_values['aws_elb_instance_id']}}"
+    instance_id="{{ ec2_info.instances[0].id }}"
     state="{{ instance_values['aws_elb_state'] }}"

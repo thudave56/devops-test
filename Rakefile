@@ -1,5 +1,5 @@
-directory "roles/common/tasks"
-
-file "roles/common/tasks/main.yml" => "main.yml" do
-  sh "echo 'Missing' > 'roles/common/tasks/main.yml"
+require 'rake/testtask'
+task :default => :test
+Rake::TestTask.new do |t|
+  t.test_files = FileList['test/*_test.rb']
 end

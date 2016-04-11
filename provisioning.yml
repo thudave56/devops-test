@@ -13,9 +13,9 @@
   gather_facts: false
   roles:
     - ec2_creation
-    - { role: elb_ec2_reg, aws_elb_instance_id: "{{ ec2_info.instances[0].id }}" }
-  tasks:
-  - pause: seconds=30 # Pausing to let the ElasticIP to catch up with processing
+    - elb_ec2_reg
+#  tasks:
+#  - pause: seconds=30 # Pausing to let the ElasticIP to catch up with processing
 
 #Configure and install all we need
 - hosts: ec2hosts

@@ -79,6 +79,10 @@
       command: bash -lc "gem install passenger --no-ri --no-rdoc"
       sudo: true
 
+    - name: Install puma
+      command: bash -lc "gem install puma --no-ri --no-rdoc"
+      sudo: true
+
     - name: update gem
       command: bash -lc "gem update --no-ri --no-rdoc"
       sudo: true
@@ -147,6 +151,10 @@
       file: path=/var/www/devops_test/logs state=directory mode=0755
       sudo: true
 
+    - name: make new directory /var/www/devops_test/code/public
+      file: path=/var/www/devops_test/code/public state=directory mode=0755
+      sudo: true
+
     - name: change owner of application folder
       command: bash -lc "sudo chown -R $(whoami):$(whoami) /var/www/devops_test/"
 
@@ -202,15 +210,9 @@
 
     - name: Run the Bundle command
       command: bash -lc "cd /var/www/devops_test/code && bundle install"
-      become: yes
-      become_user: deployer
-
-
-
-    #----------------------------------------
-    #----------------------------------------
-    #    - name: Set http service options
-
+      sudo: true
+#      become: yes
+#      become_user: deployer
 
     - name: Set httpd service as started
       service: name=httpd state=started
@@ -225,9 +227,3 @@
     - name: Update the Apache config
       action: copy src=./templates/httpd.conf dest=/etc/httpd/httpd.conf
       notify: restart httpd
-
-  handlers:
-    - name: restart httpd
-      service:
-      name: httpd
-      state: restarted

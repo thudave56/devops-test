@@ -225,5 +225,5 @@
     # This will call the "Restart Apache" handler whenever 'copy' alters
     # the remote httpd.conf.
     - name: Update the Apache config
-      action: copy src=./templates/httpd.conf dest=/etc/httpd/httpd.conf
+      action: copy src=./templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
       sudo: true

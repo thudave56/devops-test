@@ -34,6 +34,11 @@
     instance_id: "{{ ec2_info.instances[0].id }}"
   when: ec2_info|changed
 
+- name: associate an elastic IP with an instance
+  ec2_eip:
+    device_id: "{{ec2_info.instances[0].id}}" ip=93.184.216.119
+  when: ec2_info|changed
+  
 - name: Get ec2_info information
   debug:
     msg: "{{ ec2_info }}"

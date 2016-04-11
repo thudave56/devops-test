@@ -13,8 +13,9 @@
   gather_facts: false
   roles:
     - ec2_creation
+    - { role: elb_ec2_reg, aws_elb_instance_id: "{{instance_ids}}" }
   tasks:
-  - pause: minutes=1 # Pausing to let the ElasticIP to catch up with processing
+  - pause: seconds=30 # Pausing to let the ElasticIP to catch up with processing
 
 #Configure and install all we need
 - hosts: ec2hosts
@@ -22,7 +23,8 @@
     apache_vhosts_enabled:
       servername: ec2hosts
 
-  gather_facts: false
+
+  gather_facts: true
   remote_user: ec2-user
   roles:
       - common # install listing of yum repos needed on the server

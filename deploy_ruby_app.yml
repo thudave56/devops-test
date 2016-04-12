@@ -8,9 +8,9 @@
           "tag:Group": "Dev_Ruby_Test"
       register: ec2_info
 
-    - name: Show instance info
-      debug:
-        msg: "{{ ec2_info }}"
+#    - name: Show instance info
+#      debug:
+#        msg: "{{ ec2_info }}"
 
 #    - debug: var=hostvars[inventory_hostname]
   tasks:
@@ -24,5 +24,22 @@
       with_items:
         - "{{ec2_info.instances[0].id}}"
         - "{{ec2_info.instances[1].id}}"
+        - "{{ec2_info.instances[2].id}}"
 
-  
+    - name: Terminate Ec2 instances
+      local_action:
+        module: ec2
+        region: "us-east-1"
+        instance_ids: "{{ item }}"
+        state: 'absent'
+      with_items:
+        - "{{ec2_info.instances[0].id}}"
+        - "{{ec2_info.instances[1].id}}"
+        - "{{ec2_info.instances[2].id}}"
+
+- include: provisioning.yml
+- include: elb.yml
+- include: provisioning.yml
+- include: elb.yml
+- include: provisioning.yml
+- include: elb.yml

@@ -3,6 +3,7 @@
   ec2_remote_facts:
     region: "us-east-1"
     filters:
+      instance-state-name: running
       "tag:Group": "Dev_Ruby_Test"
   register: ec2_info
 

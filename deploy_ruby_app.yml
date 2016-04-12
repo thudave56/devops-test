@@ -1,25 +1,39 @@
 ---
-- hosts: all
-  serial: 1
+- hosts: localhost
+  pre_tasks:
+    - name: Search ec2
+      ec2_remote_facts:
+        region: "us-east-1"
+        filters:
+          "tag:Group": "Dev_Ruby_Test"
+          "tag:Update": "True"
+      register: ec2_info
 
-# Pre tasks should disable monitoring
+    - name: Show instance info
+      debug:
+        msg: "{{ ec2_info }}"
 
+#    - debug: var=hostvars[inventory_hostname]
   tasks:
-    - name: Gather EC2 facts
-      ec2_facts:
+    - name: Instance De-register
+      local_action:
+        module: ec2_elb
+        region: "us-east-1"
+        instance_id: "{{ ec2_info.instances[0].id }}"
+        ec2_elbs: "ELB-DevOpsTest"
+        state: absent
+      with_items: ec2_info
 
-    - name: Remove node from ELB
-      local_action: ec2_elb
-      args:
-        instance_id: "{{ ansible_ec2_instance_id }}"
-        region:      "{{ aws.region }}"
-        ec2_elbs:    "{{ aws.ec2_elb }}"
-        state:       'absent'
 
-    - name: terminating ec2 instance
-      local_action: ec2
-        state: 'absent'
-        region: us-east-1
-        instance_ids: "{{ ansible_ec2_instance_id }}"
+#  pre_tasks:
+#      - name: Gather ec2 facts
+#        action: ec2_facts
 
-#- include: provisioning.yml
+#      - name: Instance de-register
+#        connection: local
+#        local_action:
+#            module: ec2_elb
+#            region: "{{ ec2_region }}"
+#            ec2_elbs: "ELB-DevOpsTest"
+#            instance_id: "{{ ansible_ec2_instance_id }}"
+#            state: 'absent'

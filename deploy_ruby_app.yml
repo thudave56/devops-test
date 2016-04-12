@@ -6,7 +6,6 @@
         region: "us-east-1"
         filters:
           "tag:Group": "Dev_Ruby_Test"
-          "tag:Update": "True"
       register: ec2_info
 
     - name: Show instance info
@@ -15,25 +14,15 @@
 
 #    - debug: var=hostvars[inventory_hostname]
   tasks:
-    - name: Instance De-register
+    - name: Instance De-register-1
       local_action:
         module: ec2_elb
         region: "us-east-1"
-        instance_id: "{{ ec2_info.instances[0].id }}"
+        instance_id: "{{ item }}"
         ec2_elbs: "ELB-DevOpsTest"
         state: absent
-      with_items: ec2_info
+      with_items:
+        - "{{ec2_info.instances[0].id}}"
+        - "{{ec2_info.instances[1].id}}"
 
-
-#  pre_tasks:
-#      - name: Gather ec2 facts
-#        action: ec2_facts
-
-#      - name: Instance de-register
-#        connection: local
-#        local_action:
-#            module: ec2_elb
-#            region: "{{ ec2_region }}"
-#            ec2_elbs: "ELB-DevOpsTest"
-#            instance_id: "{{ ansible_ec2_instance_id }}"
-#            state: 'absent'
+  

@@ -2,7 +2,7 @@
     #----------------------------------------
     #    - name:Pull down the application data
     - name: clone github repo
-      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes
+      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes force=yes
       sudo: true
 # Check on the file config from the checkout and then copy it
     - name: stat config.ru

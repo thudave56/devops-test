@@ -1,6 +1,0 @@
----
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  roles:
-     - { role: elb_ec2_reg, aws_elb_state: present }

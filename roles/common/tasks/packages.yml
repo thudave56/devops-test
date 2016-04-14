@@ -1,15 +1,11 @@
 ---
-- name: update yum packages
-  shell: yum update -y
-  sudo: yes
-
-- name: update development packages
-  shell: yum groupinstall -y development
-  sudo: yes
+#- name: update development packages
+#  shell: yum groupinstall -y development
+#  sudo: yes
 
 - name: install common packages
   yum:
     name: "{{ item }}"
     state: latest
-  with_items: packages
-  sudo: yes
+  #  become: sudo
+  with_items: "{{packages}}"

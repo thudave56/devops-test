@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: update apt-get
+      apt: name=apt state=latest
+
+    - name: install haproxy-1.5
+      apt: name=haproxy state=present
+
+    - name: move ssl certs
+      command: cp /vagrant/ssl/private/*.pem /etc/ssl/private
+
+    - name: configure the HA proxy
+      command: sed -i -e 's/ENABLED=0/ENABLED=1/g' /etc/default/haproxy
+
+    - name: replace the haproxy.cfg
+      command: mv /etc/haproxy/haproxy.cfg{,.original}
+
+    - name: ln -s /vagrant/haproxy.cfg /etc/haproxy/haproxy.cfg
+      command: ln -s /vagrant/haproxy.cfg /etc/haproxy/haproxy.cfg
+
+    - name: start teh HAPROXY servcice
+      service: name=haproxy state=start

@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+#  become: yes
+#  become_method: sudo
+  pre_tasks:
+    - name: Search ec2
+      ec2_remote_facts:
+        region: "us-east-1"
+        filters:
+          "tag:Group": "Dev_Ruby_Test"
+          "instance-state-name": "running"
+      register: ec2_info
+
+    - name: Show instance info
+      debug:
+        msg: "{{ ec2_info }}"
+
+#   - debug: var=hostvars[inventory_hostname]
+#- hosts: ec2_info
+  tasks:
+    - name: Instance De-register-1
+      local_action:
+        module: ec2_elb
+        region: "us-east-1"
+        instance_id: "{{ item }}"
+        ec2_elbs: "ELB-DevOpsTest"
+        state: absent
+      with_items:
+        - "{{ec2_info.instances[0].id}}"
+        - "{{ec2_info.instances[1].id}}"
+    #    - "{{ec2_info.instances[2].id}}"
+
+    - name: Terminate Ec2 instances
+      local_action:
+        module: ec2
+        region: "us-east-1"
+        instance_ids: "{{ item }}"
+        state: 'absent'
+      with_items:
+        - "{{ec2_info.instances[0].id}}"
+        - "{{ec2_info.instances[1].id}}"

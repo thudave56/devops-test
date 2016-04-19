@@ -1,19 +1,4 @@
 Vagrant.require_version ">= 1.7.0"
-# Boostrap Script
-#$script = <<SCRIPT
-# Update & Install
-#add-apt-repository ppa:vbernat/haproxy-1.5
-#apt-get update
-#apt-get install haproxy php5-cli
-## Move SSL Certificated
-#cp /vagrant/ssl/private/*.pem /etc/ssl/private/
-## Configure HAPROXY
-#sed -i -e 's/ENABLED=0/ENABLED=1/g' /etc/default/haproxy
-#mv /etc/haproxy/haproxy.cfg{,.original}
-#ln -s /vagrant/haproxy.cfg /etc/haproxy/haproxy.cfg
-## Start HAPROXY
-#service haproxy start
-#SCRIPT
 
 Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.

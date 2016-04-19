@@ -7,7 +7,7 @@ default_values:
   image_id: "ami-08111162" #Amazon Linux 64 bits blank slate
   security_groups: ["DevOps-Test"]
   name: "ruby_ec2_test_onstack"
-  count: "1"
+  count: "2"
 
 instance_values:
   name: "{{ default_values['name'] }}"

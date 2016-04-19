@@ -1,2 +1,2 @@
 ---
-- include: packages.yml #Get ec2 information
+  - include: packages.yml #Get ec2 information

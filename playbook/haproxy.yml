@@ -9,8 +9,8 @@
     - name: install haproxy-1.5
       apt: name=haproxy state=present
 
-    - name: move ssl certs
-      command: cp /vagrant/ssl/private/*.pem /etc/ssl/private
+#    - name: move ssl certs
+#      copy: src=/vagrant/ssl/private/*.pem dest=/etc/ssl/private
 
     - name: configure the HA proxy
       command: sed -i -e 's/ENABLED=0/ENABLED=1/g' /etc/default/haproxy

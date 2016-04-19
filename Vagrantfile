@@ -19,7 +19,7 @@ Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
-  config.proxy.enabled = true
+  config.proxy.enabled = false
   HTTP_PROXY_URL = ENV['http_proxy']
   HTTPS_PROXY_URL = "#{HTTP_PROXY_URL}"
 
@@ -34,16 +34,16 @@ Vagrant.configure(2) do |config|
     exit 1
   end
 
-  config.vm.define "balancer" do |balancer|
-        balancer.vm.box = "ubuntu/trusty32"
-        balancer.vm.hostname = "balancer"
-        balancer.vm.box_check_update = true
-        balancer.vm.network "private_network", ip: "192.168.50.6"
-        balancer.vm.provision "ansible" do |ansible|
-        ansible.verbose = "v"
-        ansible.playbook = "./playbook/haproxy.yml"
-      end
-  end
+#  config.vm.define "balancer" do |balancer|
+#        balancer.vm.box = "ubuntu/trusty32"
+#        balancer.vm.hostname = "balancer"
+#        balancer.vm.box_check_update = true
+#        balancer.vm.network "private_network", ip: "192.168.50.6"
+#        balancer.vm.provision "ansible" do |ansible|
+#        ansible.verbose = "v"
+#        ansible.playbook = "./playbook/haproxy.yml"
+#      end
+#  end
 
   config.vm.define "web1" do |web1|
     web1.vm.box = "centos/7"

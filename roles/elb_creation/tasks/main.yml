@@ -1,0 +1,3 @@
+---
+  - include: gather_ec2_facts.yml #Get ec2 information
+  - include: create_instance.yml #Create the instance

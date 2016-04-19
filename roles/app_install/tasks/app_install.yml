@@ -54,13 +54,14 @@
     - name: Reset permissions on the app folder
       command: chcon -R -h -t httpd_sys_content_t /var/www/devops_test/code/
       sudo: true
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
 
     # Append the needed settings to the httpd.conf file
     - name: Comment out the line '#Again a comment' if it exists
       lineinfile: dest=/etc/httpd/conf/httpd.conf
                   regexp='^IncludeOptional conf.d'
                   state=absent
-
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
 
     - name: Update httpd.conf by appending text for the app
       blockinfile:
@@ -84,6 +85,7 @@
                PassengerRoot /usr/local/rvm/gems/ruby-2.1.0/gems/passenger-5.0.27
                PassengerDefaultRuby /usr/local/rvm/gems/ruby-2.1.0/wrappers/ruby
              </IfModule>
+      sudo: true
 
 
     - name: Restart Apache service after updates

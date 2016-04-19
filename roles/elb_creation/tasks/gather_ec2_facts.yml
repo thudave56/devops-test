@@ -1,6 +1,6 @@
 ---
 - name: Query all running instances in region
-  ec2_instances:
+  ec2_elb_lb:
     region: "us-east-1"
     filters:
       "tag:Group": "Dev_Ruby_Test"

@@ -1,2 +1,3 @@
 ---
-- include: deployR_app.yml
+hosts: all
+  - include: deployR_app.yml

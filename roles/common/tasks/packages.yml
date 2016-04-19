@@ -8,9 +8,9 @@
   yum:
     name: "{{ item }}"
     state: latest
-  #  become: sudo
   with_items: "{{packages}}"
-
+  become: yes
+  become_method: sudo
 #- name: Add el7 Yum Repository
 #  command: "curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo"
 #  sudo: true

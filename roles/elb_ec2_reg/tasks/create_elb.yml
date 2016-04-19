@@ -1,0 +1,14 @@
+---
+# Creates a ELB and assigns a list of subnets to it.
+- local_action:
+    module: ec2_elb_lb
+    state: present
+    name: 'DevOps_Test_ELB'
+    security_group_ids: 'sg-b02a1fc8'
+    region: "{{ instance_values['aws_elb_region'] }}"
+    subnets: 'subnet-a8b78880,subnet-81d924f6,subnet-583e5d62,subnet-01c0df47'
+    purge_subnets: yes
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80

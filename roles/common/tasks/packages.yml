@@ -1,15 +1,20 @@
 ---
-- name: update yum packages
-  shell: yum update -y
-  sudo: yes
+#- name: update development packages
+#  shell: yum groupinstall -y development
+#  sudo: yes
 
-- name: update development packages
-  shell: yum groupinstall -y development
-  sudo: yes
 
 - name: install common packages
   yum:
     name: "{{ item }}"
     state: latest
-  with_items: packages
-  sudo: yes
+  with_items: "{{packages}}"
+  become: yes
+  become_method: sudo
+#- name: Add el7 Yum Repository
+#  command: "curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo"
+#  sudo: true
+
+#- name: install passenger + Apache module
+#  yum: name=mod_passenger state=present
+#  sudo: true

@@ -72,3 +72,4 @@
 
 - name: configure passenger with apache
   command: bash -lc "rvmsudo passenger-install-apache2-module --auto"
+  become: rvmsudo

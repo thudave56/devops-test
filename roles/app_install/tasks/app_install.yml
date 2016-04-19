@@ -2,7 +2,7 @@
     #----------------------------------------
     #    - name:Pull down the application data
     - name: clone github repo
-      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes
+      git: repo=https://github.com/thudave56/devops-test.git dest=/srv/checkout update=yes force=yes
       sudo: true
 # Check on the file config from the checkout and then copy it
     - name: stat config.ru
@@ -12,7 +12,6 @@
 
     - name: Move config to app directory
       command: mv /srv/checkout/config.ru /var/www/devops_test/code/config.ru
-      when: config_stat.stat.exists
       sudo: true
 
 # Check on the file app.rb from the checkout and then copy it
@@ -32,31 +31,62 @@
       stat: path=/srv/checkout/Gemfile
       register: gemfile_stat
       sudo: true
-
+#
     - name: Move Gemfile to app directory
       command: mv /srv/checkout/Gemfile /var/www/devops_test/code/Gemfile
       sudo: true
       when: gemfile_stat.stat.exists
-
+#
     - name: Run the Bundle command
       command: bash -lc "cd /var/www/devops_test/code && bundle install"
       sudo: true
 #      become: yes
 #      become_user: deployer
-
+##
     - name: Set httpd service as started
       service: name=httpd state=started
       sudo: true
-
+#
     - name: Set httpd servcice to start at boot
       service: name=httpd enabled=yes
       sudo: true
 
-    # This will call the "Restart Apache" handler whenever 'copy' alters
-    # the remote httpd.conf.
-    - name: Update the Apache config
-      action: copy src=./templates/httpd.conf dest=/etc/httpd/conf/httpd.conf
+    - name: Reset permissions on the app folder
+      command: chcon -R -h -t httpd_sys_content_t /var/www/devops_test/code/
       sudo: true
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+
+    # Append the needed settings to the httpd.conf file
+    - name: Comment out the line '#Again a comment' if it exists
+      lineinfile: dest=/etc/httpd/conf/httpd.conf
+                  regexp='^IncludeOptional conf.d'
+                  state=absent
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+
+    - name: Update httpd.conf by appending text for the app
+      blockinfile:
+          dest: /etc/httpd/conf/httpd.conf
+          block: |
+            <VirtualHost *:80>
+              ServerName localhost
+              # Tell Apache and Passenger where your app's 'public' directory is
+              DocumentRoot /var/www/devops_test/code/public
+              PassengerRuby /usr/local/rvm/gems/ruby-2.1.0/wrappers/ruby
+              # Relax Apache security settings
+              <Directory /var/www/devops_test/code/public>
+                Allow from all
+                Options -MultiViews
+                # Uncomment this if you're on Apache > 2.4:
+                #Require all granted
+              </Directory>
+            </VirtualHost>
+            LoadModule passenger_module /usr/local/rvm/gems/ruby-2.1.0/gems/passenger-5.0.27/buildout/apache2/mod_passenger.so
+             <IfModule mod_passenger.c>
+               PassengerRoot /usr/local/rvm/gems/ruby-2.1.0/gems/passenger-5.0.27
+               PassengerDefaultRuby /usr/local/rvm/gems/ruby-2.1.0/wrappers/ruby
+             </IfModule>
+      sudo: true
+
 
     - name: Restart Apache service after updates
       service: name=httpd state=restarted

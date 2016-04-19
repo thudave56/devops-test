@@ -1,8 +1,0 @@
----
-
-# Should per default register an instance to an ELB
-aws_elb_state               : "present"
-aws_elb_region              : "eu-west-1"
-aws_elb_ec2_elbs            : "name-of-the-ELB"
-# The EC2 id which should associated with the ELB
-aws_elb_instance_id         : "EC2-instance-id"

@@ -1,5 +1,7 @@
 ---
+#- include: create_elb.yml # Create an ELB
 - include: gather_ec2_facts.yml #Get ec2 information
+
 
 - name: register EC2 instances in ELB
   ec2_elb:

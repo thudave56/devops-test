@@ -1,0 +1,9 @@
+---
+#Create the instance
+- hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+#    - common # install listing of yum repos needed on the server
+#    - rubyServer
+    - app_install
